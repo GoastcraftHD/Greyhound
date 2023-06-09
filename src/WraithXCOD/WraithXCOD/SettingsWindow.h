@@ -26,6 +26,7 @@ private:
 
     void OnGeneralPage();
     void OnModelsPage();
+    void OnMapPage();
     void OnAnimsPage();
     void OnImagesPage();
     void OnSoundsPage();
@@ -39,6 +40,7 @@ protected:
 
     WraithSettingButton GeneralButton;
     WraithSettingButton ModelButton;
+    WraithSettingButton MapButton;
     WraithSettingButton AnimButton;
     WraithSettingButton ImageButton;
     WraithSettingButton SoundButton;

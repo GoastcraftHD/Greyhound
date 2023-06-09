@@ -13,26 +13,19 @@
 // We need the WraithWindow class
 #include "WraithWindow.h"
 
-// The COD general settings
-class GeneralSettings : public WraithWindow
+// The COD image settings
+class MapSettings : public WraithWindow
 {
 public:
     // Make a new panel
-    GeneralSettings(CWnd* pParent = NULL) : WraithWindow(IDD_GENERALSETTINGS, pParent) { }
+    MapSettings(CWnd* pParent = NULL) : WraithWindow(IDD_MAPSETTINGS, pParent) { }
 
 private:
     // -- Event delegates
 
-    void OnXModels();
-    void OnXMap();
-    void OnXAnims();
-    void OnXImages();
-    void OnXEffects();
-    void OnXRawFiles();
-    void OnXSounds();
-    void OnXMTL();
-    void OnAssetSortMethod();
-
+    void OnExportXModels();
+    void OnExportObj();
+    void OnExportXMB();
 
 protected:
 

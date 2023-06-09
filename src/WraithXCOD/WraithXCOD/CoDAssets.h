@@ -17,6 +17,7 @@
 #include "CoDXConverter.h"
 #include "CoDCDNCache.h"
 #include "CoDCDNDownloader.h"
+#include "DBGameGenerics.h"
 
 // Parasyte
 #include "Parasyte.h"
@@ -236,6 +237,8 @@ private:
     static std::unique_ptr<XAnim_t> LoadGenericAnimAsset(const CoDAnim_t* Anim);
     // Loads a generic XModel
     static std::unique_ptr<XModel_t> LoadGenericModelAsset(const CoDModel_t* Model);
+    // Loads a generic XMap
+    static std::unique_ptr<XMap_t> LoadGenericMapAsset(const CoDMap_t* Map);
 
     // -- Game export utility functions, internal
 
@@ -259,6 +262,8 @@ private:
     static ExportGameResult ExportRawfileAsset(const CoDRawFile_t* Rawfile, const std::string& ExportPath);
     // Exports a game rawfile asset
     static ExportGameResult ExportMaterialAsset(const CoDMaterial_t* Material, const std::string& ExportPath, const std::string& ImagesPath, const std::string& ImageRelativePath, const std::string& ImageExtension);
+    // Exports a game rawfile asset
+    static ExportGameResult ExportMapAsset(const CoDMap_t* Map, const std::string& ExportPath);
 
     // Exports Material Image Names
     static void ExportMaterialImageNames(const XMaterial_t& Material, const std::string& ExportPath);
@@ -268,6 +273,8 @@ private:
 
     // Export a WraithModel to the various formats specified in settings
     static void ExportWraithModel(const std::unique_ptr<WraithModel>& Model, const std::string& ExportPath);
+    // Export a WraithModel to the various formats specified in settings
+    static void ExportWraithModelMap(const std::unique_ptr<WraithModel>& Model, const std::string& ExportPath);
 
     // Exports the asset in the list provided, in async
     static void ExportSelectedAssets(void* Caller, const std::unique_ptr<std::vector<CoDAsset_t*>>& Assets);

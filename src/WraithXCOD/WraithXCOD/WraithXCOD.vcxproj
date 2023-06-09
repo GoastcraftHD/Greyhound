@@ -40,6 +40,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>Greyhound</TargetName>
     <LibraryPath>..\..\External\CascLib\bin\CascLib\x64\DebugUD;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.35.32215\atlmfc\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>Greyhound</TargetName>
@@ -144,6 +145,7 @@
     <ClCompile Include="IWDSupport.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
+    <ClCompile Include="MapSettings.cpp" />
     <ClCompile Include="ModelSettings.cpp" />
     <ClCompile Include="GameModernWarfare4.cpp" />
     <ClCompile Include="PAKCache.cpp" />
@@ -217,6 +219,7 @@
     <ClInclude Include="IWDCache.h" />
     <ClInclude Include="IWDSupport.h" />
     <ClInclude Include="MainWindow.h" />
+    <ClInclude Include="MapSettings.h" />
     <ClInclude Include="ModelSettings.h" />
     <ClInclude Include="GameModernWarfare4.h" />
     <ClInclude Include="PAKCache.h" />

@@ -20,6 +20,8 @@ enum class WraithAssetType
     RawFile,
     // A raw file asset
     Material,
+    // A map file asset
+    Map,
     // A custom asset
     Custom,
     // An unknown asset, not loaded

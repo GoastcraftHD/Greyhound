@@ -20,6 +20,12 @@ union GfxPackedUnitVec
     int8_t PackedBytes[4];
 };
 
+struct GfxMaterialImage
+{
+    uint32_t SemanticHash;
+    uint32_t ImagePtr;
+};
+
 struct GfxVertexBuffer
 {
     Vector3 Position;

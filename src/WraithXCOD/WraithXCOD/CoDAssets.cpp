@@ -11,6 +11,7 @@
 #include "Image.h"
 #include "Sound.h"
 #include "BinaryReader.h"
+#include "HalfFloats.h"
 
 // We need the CDN Downloaders
 #include "CoDCDNDownloader.h"
@@ -995,6 +996,8 @@ ExportGameResult CoDAssets::ExportAsset(const CoDAsset_t* Asset)
     case WraithAssetType::RawFile: Result = ExportRawfileAsset((CoDRawFile_t*)Asset, ExportPath); break;
     // Export a material
     case WraithAssetType::Material: Result = ExportMaterialAsset((CoDMaterial_t*)Asset, ExportPath, ImagesPath, ImageRelativePath, ImageExtension); break;
+
+    case WraithAssetType::Map: Result = ExportMapAsset((CoDMap_t*)Asset, ExportPath); break;
     }
 
     // Success, unless specific error
@@ -1443,6 +1446,18 @@ std::unique_ptr<XModel_t> CoDAssets::LoadGenericModelAsset(const CoDModel_t* Mod
     case SupportedGames::InfiniteWarfare: return GameInfiniteWarfare::ReadXModel(Model); break;
     case SupportedGames::WorldWar2: return GameWorldWar2::ReadXModel(Model); break;
     case SupportedGames::Vanguard: return GameVanguard::ReadXModel(Model); break;
+    }
+
+    // Unknown game
+    return nullptr;
+}
+
+std::unique_ptr<XMap_t> CoDAssets::LoadGenericMapAsset(const CoDMap_t* Map)
+{
+    // Read from game
+    switch (CoDAssets::GameID)
+    {
+    case SupportedGames::BlackOps2: return GameBlackOps2::ReadXMap(Map); break;
     }
 
     // Unknown game
@@ -2004,6 +2019,24 @@ ExportGameResult CoDAssets::ExportMaterialAsset(const CoDMaterial_t* Material, c
     return ExportGameResult::Success;
 }
 
+ExportGameResult CoDAssets::ExportMapAsset(const CoDMap_t* Map, const std::string& ExportPath)
+{
+    bool ExportXModels = SettingsManager::GetSetting("map_exportxmodels") == "true";
+
+    std::unique_ptr<XMap_t> GenericMap = LoadGenericMapAsset(Map);
+
+    for (MapSurface_t Surface : GenericMap->Surfaces)
+    {
+        ExportMaterialImages(Surface.Material[0], ExportPath, ".png", ImageFormat::Standard_PNG);
+    }
+
+    std::unique_ptr<WraithModel> ModelResult = CoDXModelTranslator::TranslateXMap(GenericMap, false);
+
+    ExportWraithModelMap(ModelResult, ExportPath);
+
+    return ExportGameResult::Success;
+}
+
 void CoDAssets::ExportWraithModel(const std::unique_ptr<WraithModel>& Model, const std::string& ExportPath)
 {
     // Write Cosmetic List
@@ -2017,7 +2050,6 @@ void CoDAssets::ExportWraithModel(const std::unique_ptr<WraithModel>& Model, con
             Cosmetics.WriteLineFmt("select -add %s;", Bone.TagName.c_str());
         }
     }
-
     // Prepare to export to the formats specified in settings
 
     // Check for XME format
@@ -2046,7 +2078,77 @@ void CoDAssets::ExportWraithModel(const std::unique_ptr<WraithModel>& Model, con
     if (SettingsManager::GetSetting("export_obj") == "true")
     {
         // Export a Obj file
-        WavefrontOBJ::ExportOBJ(*Model.get(), FileSystems::CombinePath(ExportPath, Model->AssetName + ".obj"));
+        WavefrontOBJ::ExportOBJ(*Model.get(), FileSystems::CombinePath(ExportPath, Model->AssetName + ".obj"), false);
+    }
+    // Check for Maya format
+    if (SettingsManager::GetSetting("export_ma") == "true")
+    {
+        // Export a Maya file
+        Maya::ExportMaya(*Model.get(), FileSystems::CombinePath(ExportPath, Model->AssetName + ".ma"));
+    }
+    // Check for XNALara format
+    if (SettingsManager::GetSetting("export_xna") == "true")
+    {
+        // Export a XNALara file
+        XNALara::ExportXNA(*Model.get(), FileSystems::CombinePath(ExportPath, Model->AssetName + ".mesh.ascii"));
+    }
+    // Check for GLTF format
+    if (SettingsManager::GetSetting("export_gltf") == "true")
+    {
+        // Export a SEModel file
+        GLTF::ExportGLTF(*Model.get(), FileSystems::CombinePath(ExportPath, Model->AssetName + ".gltf"));
+    }
+    // Check for SEModel format
+    if (SettingsManager::GetSetting("export_semodel") == "true")
+    {
+        // Export a SEModel file
+        SEModel::ExportSEModel(*Model.get(), FileSystems::CombinePath(ExportPath, Model->AssetName + ".semodel"));
+    }
+    // Check for Cast format
+    if (SettingsManager::GetSetting("export_castmdl") == "true")
+    {
+        // Export a Cast file
+        Cast::ExportCastModel(*Model.get(), FileSystems::CombinePath(ExportPath, Model->AssetName + ".cast"));
+    }
+    // Check for FBX format
+    if (SettingsManager::GetSetting("export_fbx") == "true")
+    {
+        // Export an FBX file
+        // FBX::ExportFBX(*Model.get(), FileSystems::CombinePath(ExportPath, Model->AssetName + ".fbx"));
+    }
+}
+
+void CoDAssets::ExportWraithModelMap(const std::unique_ptr<WraithModel>& Model, const std::string& ExportPath)
+{
+    // Prepare to export to the formats specified in settings
+
+    // Check for XME format
+    if (SettingsManager::GetSetting("export_xmexport") == "true")
+    {
+        // Export a XME file
+        CodXME::ExportXME(*Model.get(), FileSystems::CombinePath(ExportPath, Model->AssetName + ".XMODEL_EXPORT"));
+    }
+    // Check for XMB format
+    if (SettingsManager::GetSetting("export_xmbin") == "true")
+    {
+        // Export a XMB file
+        CodXMB::ExportXMB(*Model.get(), FileSystems::CombinePath(ExportPath, Model->AssetName + ".XMODEL_BIN"));
+    }
+    // Check for SMD format
+    if (SettingsManager::GetSetting("export_smd") == "true")
+    {
+        // Export a SMD file
+        ValveSMD::ExportSMD(*Model.get(), FileSystems::CombinePath(ExportPath, Model->AssetName + ".smd"));
+    }
+
+    // The following formats are scaled
+    Model->ScaleModel(2.54f);
+
+    // Check for Obj format
+    if (SettingsManager::GetSetting("export_obj") == "true")
+    {
+        // Export a Obj file
+        WavefrontOBJ::ExportOBJ(*Model.get(), FileSystems::CombinePath(ExportPath, Model->AssetName + ".obj"), true);
     }
     // Check for Maya format
     if (SettingsManager::GetSetting("export_ma") == "true")

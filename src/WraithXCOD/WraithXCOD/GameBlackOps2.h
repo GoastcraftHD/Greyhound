@@ -33,6 +33,11 @@ public:
     // Reads a string via it's string index for Black Ops 2
     static std::string LoadStringEntry(uint64_t Index);
 
+    // Reads a XMap from Black Ops 2
+    static std::unique_ptr<XMap_t> ReadXMap(const CoDMap_t* Map);
+
+    static std::vector<BO2MapSurface> ReadMapSufaces(uint64_t address, uint32_t count);
+
 private:
     // -- Game offsets databases
 

@@ -240,6 +240,9 @@
     <ClCompile Include="CoDCDNDownloaderV0.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MapSettings.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CoDAssets.h">
@@ -457,6 +460,9 @@
     </ClInclude>
     <ClInclude Include="CoDCDNDownloaderV0.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MapSettings.h">
+      <Filter>Header Files\Dialogs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

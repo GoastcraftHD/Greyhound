@@ -200,11 +200,15 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
             { "showxrawfiles", "false" },
             { "showxsounds", "false" },
             { "showxmtl", "false" },
+            { "showxmap", "false" },
             { "exportgdt_bo3", "true" },
             { "exportgdt_waw", "false" },
             { "cleargdt_exit", "true" },
             { "overwrite_gdt", "true" },
-            { "cdn_downloader", "false" }
+            { "cdn_downloader", "false" },
+            { "map_exportxmodels", "true" },
+            { "map_exportobj", "false" },
+            { "map_exportxmb", "true" }
         });
 
 #ifndef _DEBUG

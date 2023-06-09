@@ -233,6 +233,56 @@ bool CoDModel_t::Compare(const CoDAsset_t* candidate, const AssetCompareMethod c
     return false;
 }
 
+
+
+//MapSurface_t::MapSurface_t()
+//{
+ //   Material = XMaterial_t(4);
+//}
+
+CoDMap_t::CoDMap_t()
+{
+    // Defaults
+    ModelCount = 0;
+    SurfaceCount = 0;
+    // Set type
+    AssetType = WraithAssetType::Map;
+    // Size
+    AssetSize = -1;
+}
+
+CoDMap_t::~CoDMap_t()
+{
+    // Defaults
+}
+
+bool CoDMap_t::Compare(const CoDAsset_t* candidate, const AssetCompareMethod compareMethod) const
+{
+    // For easy copying from our existing sort method, store with same var names temp
+    auto lhs = this;
+    auto rhs = candidate;
+
+    switch (compareMethod)
+    {
+    case AssetCompareMethod::ByDetails:
+    {
+        return false;
+        break;
+    }
+    case AssetCompareMethod::ByName:
+    {
+        if (lhs->AssetType < rhs->AssetType) return true;
+        if (rhs->AssetType < lhs->AssetType) return false;
+        if (lhs->AssetName < rhs->AssetName) return true;
+        if (rhs->AssetName < lhs->AssetName) return false;
+        break;
+    }
+    }
+
+    // Nothing, always return false.
+    return false;
+}
+
 CoDImage_t::CoDImage_t()
 {
     // Defaults

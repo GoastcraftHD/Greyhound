@@ -12,6 +12,7 @@
 // We need the following classes
 #include "Image.h"
 #include "CoDXAnimReader.h"
+//#include "DBGameGenerics.h"
 
 // The asset sort methods.
 enum class AssetCompareMethod
@@ -112,6 +113,26 @@ public:
     uint32_t CosmeticBoneCount;
     // The lod count
     uint16_t LodCount;
+
+    // Compares the asset to this one, if compare details is enabled, they are used if the assets are the same type.
+    bool Compare(const CoDAsset_t* candidate, const AssetCompareMethod compareMethod) const;
+};
+
+// A class that represents a model asset
+class CoDMap_t : public CoDAsset_t
+{
+public:
+    CoDMap_t();
+    virtual ~CoDMap_t();
+
+    // -- Model properties
+
+    // The xmodel count
+    uint32_t ModelCount;
+    // The image count
+    //uint32_t imageCount;
+    // The surface count
+    uint32_t SurfaceCount;
 
     // Compares the asset to this one, if compare details is enabled, they are used if the assets are the same type.
     bool Compare(const CoDAsset_t* candidate, const AssetCompareMethod compareMethod) const;
@@ -397,6 +418,51 @@ struct XModel_t
 
     // A list of lods per this model
     std::vector<XModelLod_t> ModelLods;
+};
+
+struct GfxMap_t
+{
+    //GfxMap_t();
+
+    uint32_t NamePointer;
+    uint32_t MapNamePointer;
+
+    uint32_t SurfaceCount;
+
+    uint32_t GfxVertexCount;
+    uint32_t GfxVertexBufferSize;
+    uint32_t GfxVerticesPointer;
+
+    uint32_t GfxIndicesCount;
+    uint32_t GfxIndicesPointer;
+
+    uint32_t GfxStaticModelsCount;
+
+    uint32_t GfxSurfacesPointer;
+    uint32_t GfxStaticModelsPointer;
+
+    uint32_t LutMaterial;
+};
+
+struct MapSurface_t
+{
+    //MapSurface_t();
+
+    uint32_t VertexBufferOffset;
+    uint32_t VertexIndex;
+    uint16_t VertexCount;
+
+    uint16_t FaceCount;
+    uint32_t FaceIndex;
+
+	std::vector<XMaterial_t> Material;
+    uint32_t MaterialIndex;
+};
+
+struct XMap_t
+{
+    GfxMap_t GfxMap;
+    std::vector<MapSurface_t> Surfaces;
 };
 
 // Types of key data

@@ -10,5 +10,5 @@ class WavefrontOBJ
 {
 public:
     // Export a WraithModel to a Wavefront OBJ file
-    static void ExportOBJ(const WraithModel& Model, const std::string& FileName);
+    static void ExportOBJ(const WraithModel& Model, const std::string& FileName, bool CombineMtls);
 };

@@ -13,6 +13,7 @@
 #include "AnimSettings.h"
 #include "ImageSettings.h"
 #include "SoundSettings.h"
+#include "MapSettings.h"
 
 // We need the following Wraith classes
 #include "Strings.h"
@@ -24,6 +25,7 @@ BEGIN_MESSAGE_MAP(SettingsWindow, WraithWindow)
     ON_COMMAND(IDC_ANIMPANEL, OnAnimsPage)
     ON_COMMAND(IDC_IMAGEPANEL, OnImagesPage)
     ON_COMMAND(IDC_SOUNDPANEL, OnSoundsPage)
+	ON_COMMAND(IDC_MAPPANEL, OnMapPage)
 END_MESSAGE_MAP()
 
 void SettingsWindow::DoDataExchange(CDataExchange* pDX)
@@ -36,6 +38,7 @@ void SettingsWindow::DoDataExchange(CDataExchange* pDX)
     DDX_Control(pDX, IDC_ANIMPANEL, AnimButton);
     DDX_Control(pDX, IDC_IMAGEPANEL, ImageButton);
     DDX_Control(pDX, IDC_SOUNDPANEL, SoundButton);
+    DDX_Control(pDX, IDC_MAPPANEL, MapButton);
 }
 
 void SettingsWindow::OnBeforeLoad()
@@ -84,6 +87,7 @@ void SettingsWindow::SetUnselected()
     // Set them
     this->GeneralButton.SetSelectedState(false);
     this->ModelButton.SetSelectedState(false);
+    this->MapButton.SetSelectedState(false);
     this->AnimButton.SetSelectedState(false);
     this->ImageButton.SetSelectedState(false);
     this->SoundButton.SetSelectedState(false);
@@ -135,6 +139,30 @@ void SettingsWindow::OnModelsPage()
 
     this->SetUnselected();
     this->ModelButton.SetSelectedState(true);
+}
+
+void SettingsWindow::OnMapPage()
+{
+    // Clean up current
+    if (SettingsPanel != nullptr)
+    {
+        SettingsPanel->DestroyWindow();
+        SettingsPanel.reset();
+    }
+
+    // -- Models
+
+    CRect Size;
+    // Fetch
+    this->GetClientRect(&Size);
+
+    SettingsPanel = std::make_unique<MapSettings>();
+    SettingsPanel->Create(IDD_MAPSETTINGS, this);
+    SettingsPanel->MoveWindow(176, 0, Size.right - 177, Size.bottom);
+    SettingsPanel->ShowWindow(SW_SHOW);
+
+    this->SetUnselected();
+    this->MapButton.SetSelectedState(true);
 }
 
 void SettingsWindow::OnAnimsPage()

@@ -2,6 +2,8 @@
 
 #include <cstdint>
 
+#include "VectorMath.h"
+
 // A structure that represents game offset information
 struct DBGameInfo
 {
@@ -592,6 +594,94 @@ struct BO2GfxImage
 
     uint32_t NamePtr;
     uint32_t KeyUpper;
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct BO2GfxMap
+{
+    uint32_t NamePointer;
+    uint32_t MapNamePointer;
+
+    uint8_t Padding[8];
+
+    uint32_t SurfaceCount;
+
+    // Possibly more Data that could be useful
+    uint8_t Padding2[0x194];
+
+    uint32_t GfxVertexCount;
+    uint32_t GfxVertexBufferSize;
+    uint32_t GfxVerticesPointer;
+
+    uint8_t Padding3[0x10];
+
+    uint32_t GfxIndicesCount;
+    uint32_t GfxIndicesPointer;
+
+    // Possibly more Data that could be useful
+    uint8_t Padding4[0x144];
+
+    uint32_t GfxStaticModelsCount;
+
+    uint8_t Padding5[0x54];
+
+    uint32_t GfxSurfacesPointer;
+    uint32_t GfxStaticModelsPointer;
+
+    uint8_t Padding6[0x68];
+
+    uint32_t LutMaterial;
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct BO2MapEnts
+{
+    uint32_t Padding;
+
+    uint32_t NamePointer;
+    uint32_t MapData;
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct BO2MapSurface
+{
+
+    uint8_t Padding[0xC];
+
+    uint32_t VertexBufferOffset;
+
+    uint8_t Padding2[0x10];
+
+    uint32_t VertexIndex;
+
+    uint32_t Padding3;
+
+    uint16_t VertexCount;
+    uint16_t FaceCount;
+    uint32_t FaceIndex;
+    uint32_t MaterialPointer;
+
+    uint8_t Padding4[0x1C];
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct BO2GfxVertexBuffer
+{
+    Vector3 Position;
+
+    uint32_t BiNormal;
+    uint8_t Color[4];
+    uint16_t UVUPos;
+    uint16_t UVVPos;
+
+    uint32_t Normal;
+    uint32_t Tangent;
+
+    uint32_t Padding;
 };
 #pragma pack(pop)
 

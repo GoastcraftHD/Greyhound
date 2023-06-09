@@ -54,6 +54,8 @@ public:
 
     // Translates an in-game XModel to a WraithModel
     static std::unique_ptr<WraithModel> TranslateXModel(const std::unique_ptr<XModel_t>& Model, uint32_t LodIndex, bool JustBones = false);
+    // Translates an in-game XModel to a WraithModel
+    static std::unique_ptr<WraithModel> TranslateXMap(const std::unique_ptr<XMap_t>& Map, bool ExpotXModels);
     // Translates an in-game XModel's hitbox to a WraithModel
     static std::unique_ptr<WraithModel> TranslateXModelHitbox(const std::unique_ptr<XModel_t>& Model);
 
@@ -64,6 +66,9 @@ public:
 
 private:
     // -- Translation utilities
+
+    static uint16_t* ReadGfxIndices(uint64_t Address, uint32_t Count);
+    static GfxVertexBuffer ReadGfxVertices(uint64_t Address, uint32_t StartIndex);
 
     // Normal unpack method A
     static Vector3 UnpackNormalA(uint32_t Normal);

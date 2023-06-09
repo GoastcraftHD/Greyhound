@@ -17,6 +17,7 @@ BEGIN_MESSAGE_MAP(GeneralSettings, WraithWindow)
     ON_COMMAND(IDC_SHOWXRAW, OnXRawFiles)
     ON_COMMAND(IDC_SHOWXSOUNDS, OnXSounds)
     ON_COMMAND(IDC_SHOWXMTL, OnXMTL)
+    ON_COMMAND(IDC_SHOWXMAP, OnXMap)
     ON_CBN_SELENDOK(IDC_ASSET_SORT_METHOD, OnAssetSortMethod)
 END_MESSAGE_MAP()
 
@@ -49,9 +50,11 @@ void GeneralSettings::OnBeforeLoad()
     ((CButton*)GetDlgItem(IDC_SHOWXMODEL))->SetCheck(SettingsManager::GetSetting("showxmodel", "true") == "true");
     ((CButton*)GetDlgItem(IDC_SHOWXANIM))->SetCheck(SettingsManager::GetSetting("showxanim", "true") == "true");
     ((CButton*)GetDlgItem(IDC_SHOWXIMAGE))->SetCheck(SettingsManager::GetSetting("showximage", "false") == "true");
+    ((CButton*)GetDlgItem(IDC_SHOWXMAP))->SetCheck(SettingsManager::GetSetting("showximage", "false") == "true");
     ((CButton*)GetDlgItem(IDC_SHOWXRAW))->SetCheck(SettingsManager::GetSetting("showxrawfiles", "false") == "true");
     ((CButton*)GetDlgItem(IDC_SHOWXSOUNDS))->SetCheck(SettingsManager::GetSetting("showxsounds", "false") == "true");
     ((CButton*)GetDlgItem(IDC_SHOWXMTL))->SetCheck(SettingsManager::GetSetting("showxmtl", "false") == "true");
+    ((CButton*)GetDlgItem(IDC_SHOWXMAP))->SetCheck(SettingsManager::GetSetting("showxmap", "false") == "true");
 
     // Add sort methods
     auto ComboControl = (CComboBox*)GetDlgItem(IDC_ASSET_SORT_METHOD);
@@ -74,6 +77,14 @@ void GeneralSettings::OnXModels()
     bool CheckboxChecked = ((((CButton*)GetDlgItem(IDC_SHOWXMODEL))->GetState() & BST_CHECKED) == BST_CHECKED);
     // Set it
     SettingsManager::SetSetting("showxmodel", (CheckboxChecked) ? "true" : "false");
+}
+
+void GeneralSettings::OnXMap()
+{
+    // Whether or not we are checked
+    bool CheckboxChecked = ((((CButton*)GetDlgItem(IDC_SHOWXMAP))->GetState() & BST_CHECKED) == BST_CHECKED);
+    // Set it
+    SettingsManager::SetSetting("showxmap", (CheckboxChecked) ? "true" : "false");
 }
 
 void GeneralSettings::OnXAnims()

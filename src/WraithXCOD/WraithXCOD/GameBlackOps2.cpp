@@ -49,11 +49,12 @@ bool GameBlackOps2::LoadOffsets()
         // Check built-in offsets via game exe mode (SP/MP/ZM)
         for (auto& GameOffsets : (CoDAssets::GameFlags == SupportedGameFlags::SP) ? SinglePlayerOffsets : (CoDAssets::GameFlags == SupportedGameFlags::MP) ? MultiPlayerOffsets : ZombieModeOffsets)
         {
-            // Read required offsets (XANIM, XMODEL, XFX)
+            // Read required offsets (XANIM, XMODEL, XFX, ???, Map)
             CoDAssets::GameOffsetInfos.emplace_back(CoDAssets::GameInstance->Read<uint32_t>(GameOffsets.DBAssetPools + (4 * 4)));
             CoDAssets::GameOffsetInfos.emplace_back(CoDAssets::GameInstance->Read<uint32_t>(GameOffsets.DBAssetPools + (4 * 5)));
             CoDAssets::GameOffsetInfos.emplace_back(CoDAssets::GameInstance->Read<uint32_t>(GameOffsets.DBAssetPools + (4 * 0x21)));
             CoDAssets::GameOffsetInfos.emplace_back(CoDAssets::GameInstance->Read<uint32_t>(GameOffsets.DBAssetPools + (4 * 0x29)));
+            CoDAssets::GameOffsetInfos.emplace_back(GameOffsets.DBAssetPools);
             // Verify via first xmodel asset
             auto FirstXModelName = CoDAssets::GameInstance->ReadNullTerminatedString(CoDAssets::GameInstance->Read<uint32_t>(CoDAssets::GameOffsetInfos[1] + 4));
             // Check
@@ -69,6 +70,7 @@ bool GameBlackOps2::LoadOffsets()
                     CoDAssets::GamePoolSizes.emplace_back(CoDAssets::GameInstance->Read<uint32_t>(GameOffsets.DBPoolSizes + (4 * 5)));
                     CoDAssets::GamePoolSizes.emplace_back(CoDAssets::GameInstance->Read<uint32_t>(GameOffsets.DBPoolSizes + (4 * 0x21)));
                     CoDAssets::GamePoolSizes.emplace_back(CoDAssets::GameInstance->Read<uint32_t>(GameOffsets.DBPoolSizes + (4 * 0x29)));
+                    CoDAssets::GamePoolSizes.emplace_back(GameOffsets.DBPoolSizes );
                     // Return success
                     return true;
                 }
@@ -86,11 +88,12 @@ bool GameBlackOps2::LoadOffsets()
         {
             // Load info and verify
             auto GameOffsets = DBGameInfo(CoDAssets::GameInstance->Read<uint32_t>(DBAssetsScan - 0xB), CoDAssets::GameInstance->Read<uint32_t>(DBAssetsScan + 0x3B), CoDAssets::GameInstance->Read<uint32_t>(StringTableScan - 0x2E), 0);
-            // Read required offsets (XANIM, XMODEL, XFX)
+            // Read required offsets (XANIM, XMODEL, XFX, ???, Map)
             CoDAssets::GameOffsetInfos.emplace_back(CoDAssets::GameInstance->Read<uint32_t>(GameOffsets.DBAssetPools + (4 * 4)));
             CoDAssets::GameOffsetInfos.emplace_back(CoDAssets::GameInstance->Read<uint32_t>(GameOffsets.DBAssetPools + (4 * 5)));
             CoDAssets::GameOffsetInfos.emplace_back(CoDAssets::GameInstance->Read<uint32_t>(GameOffsets.DBAssetPools + (4 * 0x21)));
             CoDAssets::GameOffsetInfos.emplace_back(CoDAssets::GameInstance->Read<uint32_t>(GameOffsets.DBAssetPools + (4 * 0x29)));
+            CoDAssets::GameOffsetInfos.emplace_back(GameOffsets.DBAssetPools);
             // Verify via first xmodel asset
             auto FirstXModelName = CoDAssets::GameInstance->ReadNullTerminatedString(CoDAssets::GameInstance->Read<uint32_t>(CoDAssets::GameOffsetInfos[1] + 4));
             // Check
@@ -106,6 +109,7 @@ bool GameBlackOps2::LoadOffsets()
                     CoDAssets::GamePoolSizes.emplace_back(CoDAssets::GameInstance->Read<uint32_t>(GameOffsets.DBPoolSizes + (4 * 5)));
                     CoDAssets::GamePoolSizes.emplace_back(CoDAssets::GameInstance->Read<uint32_t>(GameOffsets.DBPoolSizes + (4 * 0x21)));
                     CoDAssets::GamePoolSizes.emplace_back(CoDAssets::GameInstance->Read<uint32_t>(GameOffsets.DBPoolSizes + (4 * 0x29)));
+                    CoDAssets::GamePoolSizes.emplace_back(GameOffsets.DBPoolSizes);
                     // Return success
                     return true;
                 }
@@ -123,6 +127,7 @@ bool GameBlackOps2::LoadAssets()
     bool NeedsAnims = (SettingsManager::GetSetting("showxanim", "true") == "true");
     bool NeedsModels = (SettingsManager::GetSetting("showxmodel", "true") == "true");
     bool NeedsRawFiles = (SettingsManager::GetSetting("showxrawfiles", "false") == "true");
+    bool NeedsMap = (SettingsManager::GetSetting("showxmap", "false") == "true");
 
     // Check if we need assets
     if (NeedsAnims)
@@ -306,6 +311,26 @@ bool GameBlackOps2::LoadAssets()
             // Advance
             RawfileOffset += sizeof(BO2XRawFile);
         }
+    }
+
+    if (NeedsMap)
+    {
+        int mapBaseAddress = CoDAssets::GameInstance->Read<uint32_t>(CoDAssets::GameOffsetInfos[4] + 4 * 0x11);
+
+        BO2GfxMap gfxMapAsset = CoDAssets::GameInstance->Read<BO2GfxMap>(mapBaseAddress);
+
+        std::string mapName = CoDAssets::GameInstance->ReadNullTerminatedString(gfxMapAsset.MapNamePointer);
+        
+
+        CoDMap_t* LoadedMap = new CoDMap_t();
+        LoadedMap->AssetName = mapName;
+        LoadedMap->ModelCount = gfxMapAsset.GfxStaticModelsCount;
+        LoadedMap->SurfaceCount = gfxMapAsset.SurfaceCount;
+        LoadedMap->AssetPointer = CoDAssets::GameOffsetInfos[4];
+
+        LoadedMap->AssetStatus = WraithAssetStatus::Loaded;
+
+        CoDAssets::GameAssets->LoadedAssets.push_back(LoadedMap);
     }
 
     // Success, error only on specific load
@@ -562,6 +587,61 @@ std::unique_ptr<XImageDDS> GameBlackOps2::LoadXImage(const XImage_t& Image)
 
     // Failed to load the image
     return nullptr;
+}
+
+std::unique_ptr<XMap_t> GameBlackOps2::ReadXMap(const CoDMap_t* Map)
+{
+    // Verify that the program is running
+    if (!CoDAssets::GameInstance->IsRunning()) return nullptr;
+
+    std::unique_ptr<XMap_t> MapAsset = std::make_unique<XMap_t>();
+
+    BO2GfxMap GfxMap = CoDAssets::GameInstance->Read<BO2GfxMap>(CoDAssets::GameInstance->Read<uint32_t>(Map->AssetPointer + 4 * 0x11));
+
+    std::vector<BO2MapSurface> Surfaces = ReadMapSufaces(GfxMap.GfxSurfacesPointer, GfxMap.SurfaceCount);
+
+    for (BO2MapSurface Surface : Surfaces)
+    {
+        MapSurface_t MapSurface;
+        MapSurface.VertexBufferOffset = Surface.VertexBufferOffset;
+        MapSurface.VertexIndex = Surface.VertexIndex;
+        MapSurface.VertexCount = Surface.VertexCount;
+        MapSurface.FaceCount = Surface.FaceCount;
+        MapSurface.FaceIndex = Surface.FaceIndex;
+
+        MapSurface.Material.emplace_back(ReadXMaterial(Surface.MaterialPointer));
+
+        MapAsset->Surfaces.emplace_back(MapSurface);
+    }
+
+    MapAsset->GfxMap.NamePointer = GfxMap.NamePointer;
+    MapAsset->GfxMap.MapNamePointer = GfxMap.MapNamePointer;
+    MapAsset->GfxMap.SurfaceCount = GfxMap.SurfaceCount;
+    MapAsset->GfxMap.GfxVertexCount = GfxMap.GfxVertexCount;
+    MapAsset->GfxMap.GfxVertexBufferSize = GfxMap.GfxVertexBufferSize;
+    MapAsset->GfxMap.GfxVerticesPointer = GfxMap.GfxVerticesPointer;
+    MapAsset->GfxMap.GfxIndicesCount = GfxMap.GfxIndicesCount;
+    MapAsset->GfxMap.GfxIndicesPointer = GfxMap.GfxIndicesPointer;
+    MapAsset->GfxMap.GfxStaticModelsCount = GfxMap.GfxStaticModelsCount;
+    MapAsset->GfxMap.GfxSurfacesPointer = GfxMap.GfxSurfacesPointer;
+    MapAsset->GfxMap.GfxStaticModelsPointer = GfxMap.GfxStaticModelsPointer;
+    MapAsset->GfxMap.LutMaterial = GfxMap.LutMaterial;
+
+    return MapAsset;
+}
+
+std::vector<BO2MapSurface> GameBlackOps2::ReadMapSufaces(uint64_t address, uint32_t count)
+{
+    std::vector<BO2MapSurface> surfaces;
+
+    for (int i = 0; i < count; i++)
+    {
+    	BO2MapSurface Surface = CoDAssets::GameInstance->Read<BO2MapSurface>(address + i * 80);
+
+        surfaces.push_back(Surface);
+    }
+
+    return surfaces;
 }
 
 std::string GameBlackOps2::LoadStringEntry(uint64_t Index)
