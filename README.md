@@ -12,6 +12,12 @@ Ricochet means we can no longer export from in-game, Parasyte is now required th
 
 [https://wiki.codmods.com/docs/parasyte/index](https://wiki.codmods.com/docs/parasyte/index)
 
+## Map Extraction
+The map extraction feature is still in early development and will get improved compatibility over time.
+
+### List of currently supported games for map extraction
+* Black Ops 2
+
 ## Requirements
 
 * Windows 10 x64 or above (Windows 7/8/8.1 should work, but are untested)
