@@ -2308,7 +2308,7 @@ void CoDAssets::ExportMaterialImageNames(const XMaterial_t& Material, const std:
 
             // Create File
             Settings.Create(SettingsPath);
-
+            
             // Write header
             Settings.WriteLineFmt("# Material: %s", Material.MaterialName.c_str());
             Settings.WriteLineFmt("# Techset/Type: %s", Material.TechsetName.c_str());

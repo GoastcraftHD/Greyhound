@@ -281,7 +281,7 @@ void GLTF::ExportGLTF(const WraithModel& Model, const std::string& FileName, boo
 			});
 		}
 
-		size_t NumWeights = ((MaxSkinInfluenceBuffer - 1) / 4) + 1;
+		size_t NumWeights = MaxSkinInfluenceBuffer == 0 ? 0 : ((MaxSkinInfluenceBuffer - 1) / 4) + 1;
 
 		// Indices
 		auto IndicesView = CreateView(GltfModel, 0, GltfBuffer.data.size(), Mesh.Faces.size() * 3 * 4, 0, TINYGLTF_TARGET_ELEMENT_ARRAY_BUFFER);

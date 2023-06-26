@@ -514,13 +514,17 @@ const XMaterial_t GameBlackOps2::ReadXMaterial(uint64_t MaterialPointer)
     // Allocate a new material with the given image count
     XMaterial_t Result(MaterialData.ImageCount);
     // Clean the name, then apply it
-    Result.MaterialName = FileSystems::GetFileNameWithoutExtension(CoDAssets::GameInstance->ReadNullTerminatedString(MaterialData.NamePtr));
+    //Result.MaterialName = FileSystems::GetFileNameWithoutExtension(CoDAssets::GameInstance->ReadNullTerminatedString(MaterialData.NamePtr));
+    Result.MaterialName = CoDAssets::GameInstance->ReadNullTerminatedString(MaterialData.NamePtr);
+
+    std::string techset = CoDAssets::GameInstance->ReadNullTerminatedString(MaterialData.TechniqueSetPointer);
 
     // Iterate over material images, assign proper references if available
     for (uint32_t m = 0; m < MaterialData.ImageCount; m++)
     {
         // Read the image info
         auto ImageInfo = CoDAssets::GameInstance->Read<BO2XMaterialImage>(MaterialData.ImageTablePtr);
+
         // Read the image name (End of image - 8)
         auto ImageName = CoDAssets::GameInstance->ReadNullTerminatedString(CoDAssets::GameInstance->Read<uint32_t>(ImageInfo.ImagePtr + (sizeof(BO2GfxImage) - 8)));
 
@@ -540,6 +544,12 @@ const XMaterial_t GameBlackOps2::ReadXMaterial(uint64_t MaterialPointer)
         case 0x34ECCCB3:
         case 0x8C297E80:
             DefaultUsage = ImageUsageType::SpecularMap;
+            break;
+        case 0xB60D1850:
+            DefaultUsage = ImageUsageType::BlendDiffuse;
+            break;
+        case 0x9434AEDE:
+            DefaultUsage = ImageUsageType::BlendNormal;
             break;
         }
 

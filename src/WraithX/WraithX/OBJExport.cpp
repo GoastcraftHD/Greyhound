@@ -32,12 +32,12 @@ void WavefrontOBJ::ExportOBJ(const WraithModel& Model, const std::string& FileNa
         {
             // Write positions
             Writer.WriteLineFmt(
-                "v %f %f %f\n"
-                "v %f %f %f\n"
-                "v %f %f %f",
-                Submesh.Verticies[Face.Index1].Position.X, Submesh.Verticies[Face.Index1].Position.Y, Submesh.Verticies[Face.Index1].Position.Z,
-                Submesh.Verticies[Face.Index2].Position.X, Submesh.Verticies[Face.Index2].Position.Y, Submesh.Verticies[Face.Index2].Position.Z,
-                Submesh.Verticies[Face.Index3].Position.X, Submesh.Verticies[Face.Index3].Position.Y, Submesh.Verticies[Face.Index3].Position.Z
+                "v %f %f %f %f %f %f %f\n"
+                "v %f %f %f %f %f %f %f\n"
+                "v %f %f %f %f %f %f %f",
+                Submesh.Verticies[Face.Index1].Position.X, Submesh.Verticies[Face.Index1].Position.Y, Submesh.Verticies[Face.Index1].Position.Z, (float)Submesh.Verticies[Face.Index1].Color[0] / 255, (float)Submesh.Verticies[Face.Index1].Color[1] / 255, (float)Submesh.Verticies[Face.Index1].Color[2] / 255, (float)Submesh.Verticies[Face.Index1].Color[3] / 255,
+                Submesh.Verticies[Face.Index2].Position.X, Submesh.Verticies[Face.Index2].Position.Y, Submesh.Verticies[Face.Index2].Position.Z, (float)Submesh.Verticies[Face.Index2].Color[0] / 255, (float)Submesh.Verticies[Face.Index2].Color[1] / 255, (float)Submesh.Verticies[Face.Index2].Color[2] / 255, (float)Submesh.Verticies[Face.Index2].Color[3] / 255,
+                Submesh.Verticies[Face.Index3].Position.X, Submesh.Verticies[Face.Index3].Position.Y, Submesh.Verticies[Face.Index3].Position.Z, (float)Submesh.Verticies[Face.Index3].Color[0] / 255, (float)Submesh.Verticies[Face.Index3].Color[1] / 255, (float)Submesh.Verticies[Face.Index3].Color[2] / 255, (float)Submesh.Verticies[Face.Index3].Color[3] / 255
                 );
         }
     }
@@ -75,6 +75,7 @@ void WavefrontOBJ::ExportOBJ(const WraithModel& Model, const std::string& FileNa
                 );
         }
     }
+
     // A list of unique materials
     std::unordered_set<int32_t> UniqueMaterials;
     // The offset buffer

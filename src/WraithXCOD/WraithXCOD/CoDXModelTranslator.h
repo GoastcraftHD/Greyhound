@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <algorithm>
 
 // We need the following WraithX classes
 #include <WraithModel.h>
@@ -67,8 +68,9 @@ public:
 private:
     // -- Translation utilities
 
-    static uint16_t* ReadGfxIndices(uint64_t Address, uint32_t Count);
+    static std::unique_ptr<uint16_t> ReadGfxIndices(uint64_t Address, uint32_t Count);
     static GfxVertexBuffer ReadGfxVertices(uint64_t Address, uint32_t StartIndex);
+    static std::vector<std::string> SplitString(std::string String, char Splitter);
 
     // Normal unpack method A
     static Vector3 UnpackNormalA(uint32_t Normal);

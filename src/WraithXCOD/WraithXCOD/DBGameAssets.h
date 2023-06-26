@@ -558,8 +558,9 @@ struct BO2XMaterial
 
     uint8_t ImageCount;
 
-    uint8_t Padding2[11];
+    uint8_t Padding2[7];
 
+    uint32_t TechniqueSetPointer;
     uint32_t ImageTablePtr;
 };
 #pragma pack(pop)
