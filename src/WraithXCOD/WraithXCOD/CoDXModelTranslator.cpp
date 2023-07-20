@@ -508,6 +508,7 @@ std::unique_ptr<WraithModel> CoDXModelTranslator::TranslateXMap(const std::uniqu
     ModelResult->AssetName = CoDAssets::GameInstance->ReadNullTerminatedString(GfxMap.MapNamePointer);
 
     std::map<std::string, uint32_t> UniqueMaterials;
+    std::map<std::string, uint32_t> UniqueBlendMaterials;
 
     for (uint32_t i = 0; i < Map->Surfaces.size(); i++)
     {
@@ -537,9 +538,13 @@ std::unique_ptr<WraithModel> CoDXModelTranslator::TranslateXMap(const std::uniqu
         auto FindResult = UniqueMaterials.find(MaterialName);
 
         /* Material IDs:
-         * #00 = Base Material
-         * #01 = Blend Material
-         * #02 = Blend Submaterial
+         * #X0 = Base Material
+         * #X1 = Blend Material
+         * #X2 = Blend Submaterial
+         * #X3 = Decal
+         *
+         * #0X = Default
+         * #1X = Simple Material
 		 */
         if (FindResult != UniqueMaterials.end())
         {
@@ -552,15 +557,26 @@ std::unique_ptr<WraithModel> CoDXModelTranslator::TranslateXMap(const std::uniqu
 
             for (uint32_t BlendIndex = 1; BlendIndex < NumBlendMats + 1; BlendIndex++)
             {
-                auto BlendFindResult = UniqueMaterials.find(BlendMaterialNames[BlendIndex]);
+                auto BlendFindResult = UniqueBlendMaterials.find(BlendMaterialNames[BlendIndex]);
 
-                if (BlendFindResult != UniqueMaterials.end())
+                if (BlendFindResult != UniqueBlendMaterials.end())
                 {
                     continue;
                 }
 
                 WraithMaterial& wraithMaterial = ModelResult->AddMaterial();
-                wraithMaterial.MaterialName = BlendMaterialNames[BlendIndex] + "#02";
+
+                std::string MaterialSuffix = "";
+                if (Material.Images.size() == 2)
+                {
+                    MaterialSuffix = "#12";
+                }
+                else
+                {
+                    MaterialSuffix = "#02";
+                }
+
+                wraithMaterial.MaterialName = BlendMaterialNames[BlendIndex] + MaterialSuffix;
 
 
                 for (uint32_t ImageIndex = 0; ImageIndex < Material.Images.size(); ImageIndex++)
@@ -569,18 +585,40 @@ std::unique_ptr<WraithModel> CoDXModelTranslator::TranslateXMap(const std::uniqu
 
                     switch (Material.Images[ImageIndex].SemanticHash)
                     {
-                    case 0xB60D1850: wraithMaterial.DiffuseMapName = CoDAssets::GameInstance->ReadNullTerminatedString(CoDAssets::GameInstance->Read<uint32_t>(MaterialImage.ImagePtr + 0x48)) + ".png"; break;
-                    case 0x9434AEDE: wraithMaterial.NormalMapName = CoDAssets::GameInstance->ReadNullTerminatedString(CoDAssets::GameInstance->Read<uint32_t>(MaterialImage.ImagePtr + 0x48)) + ".png"; break;
+                    case 0xB60D1850: wraithMaterial.DiffuseMapName = CoDAssets::GameInstance->ReadNullTerminatedString(CoDAssets::GameInstance->Read<uint32_t>(MaterialImage.ImagePtr + 0x48)) + ".png"; break; // Blend Color
+                    case 0x9434AEDE: wraithMaterial.NormalMapName = CoDAssets::GameInstance->ReadNullTerminatedString(CoDAssets::GameInstance->Read<uint32_t>(MaterialImage.ImagePtr + 0x48)) + ".png"; break; // Blend Normal
+                    case 0xD2866322: wraithMaterial.SpecularMapName = CoDAssets::GameInstance->ReadNullTerminatedString(CoDAssets::GameInstance->Read<uint32_t>(MaterialImage.ImagePtr + 0x48)) + ".png"; break; // Decal / Blend Specular
+                    //case 0x9434AEDD: printf("Test"); break; // Decal Normal
+                    //case 0xB60D1853: printf("Test"); break; // Decal Color
+                    //case 0xD2866321: printf("Test"); break; // ~$black-rgbl
                     }
                 }
 
-                Map->Surfaces[i].MaterialIndex = (uint32_t)UniqueMaterials.size();
-                UniqueMaterials.insert(std::make_pair(BlendMaterialNames[BlendIndex], Map->Surfaces[i].MaterialIndex));
+                UniqueBlendMaterials.insert(std::make_pair(BlendMaterialNames[BlendIndex], Map->Surfaces[i].MaterialIndex));
             }
 
             // Create default material for surface
             WraithMaterial& wraithMaterial = ModelResult->AddMaterial();
-            wraithMaterial.MaterialName = MaterialName + (NumBlendMats > 0 ? "#01" : "#00");
+
+            std::string MaterialSuffix = "";
+            if (NumBlendMats > 0 && Material.Images.size() > 2)
+            {
+                MaterialSuffix = "#01";
+            }
+        	else if (NumBlendMats <= 0 && Material.Images.size() > 2)
+        	{
+                MaterialSuffix = "#00";
+        	}
+            else if (NumBlendMats > 0 && Material.Images.size() == 2)
+            {
+                MaterialSuffix = "#11";
+            }
+            else if (NumBlendMats <= 0 && Material.Images.size() == 2)
+            {
+                MaterialSuffix = "#10";
+            }
+
+            wraithMaterial.MaterialName = MaterialName + MaterialSuffix;
 
             for (uint32_t ImageIndex = 0; ImageIndex < Material.Images.size(); ImageIndex++)
             {

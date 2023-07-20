@@ -550,6 +550,12 @@ const XMaterial_t GameBlackOps2::ReadXMaterial(uint64_t MaterialPointer)
             break;
         case 0x9434AEDE:
             DefaultUsage = ImageUsageType::BlendNormal;
+        case 0xD2866322:
+            DefaultUsage = ImageUsageType::BlendSpecular;
+        case 0x9434AEDD:
+            DefaultUsage = ImageUsageType::DecalNormal;
+        case 0xB60D1853:
+            DefaultUsage = ImageUsageType::DecalDiffuse;
             break;
         }
 

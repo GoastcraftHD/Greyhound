@@ -207,8 +207,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
             { "overwrite_gdt", "true" },
             { "cdn_downloader", "false" },
             { "map_exportxmodels", "true" },
-            { "map_exportobj", "false" },
-            { "map_exportxmb", "true" }
+            { "map_export_method", "Blender"}
         });
 
 #ifndef _DEBUG

@@ -281,7 +281,10 @@ enum class ImageUsageType : uint8_t
     SpecularMap,
     GlossMap,
     BlendDiffuse,
-    BlendNormal
+    BlendNormal,
+    BlendSpecular,
+    DecalDiffuse,
+    DecalNormal
 };
 
 struct XImage_t
