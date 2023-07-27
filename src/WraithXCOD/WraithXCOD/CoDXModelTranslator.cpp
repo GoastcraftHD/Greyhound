@@ -552,6 +552,9 @@ std::unique_ptr<WraithModel> CoDXModelTranslator::TranslateXMap(const std::uniqu
         }
         else
         {
+
+        	//ASSERT(MaterialName != "zm_tm_mud_slow02");
+
             // Create blend materials if present
             std::vector<std::string> BlendMaterialNames = SplitString(MaterialName, ':');
 
@@ -566,15 +569,15 @@ std::unique_ptr<WraithModel> CoDXModelTranslator::TranslateXMap(const std::uniqu
 
                 WraithMaterial& wraithMaterial = ModelResult->AddMaterial();
 
-                std::string MaterialSuffix = "";
-                if (Material.Images.size() == 2)
+                std::string MaterialSuffix = "#02";
+                /*if (Material.Images.size() == 2)
                 {
                     MaterialSuffix = "#12";
                 }
                 else
                 {
                     MaterialSuffix = "#02";
-                }
+                }*/
 
                 wraithMaterial.MaterialName = BlendMaterialNames[BlendIndex] + MaterialSuffix;
 
@@ -605,18 +608,18 @@ std::unique_ptr<WraithModel> CoDXModelTranslator::TranslateXMap(const std::uniqu
             {
                 MaterialSuffix = "#01";
             }
-        	else if (NumBlendMats <= 0 && Material.Images.size() > 2)
+        	else //if (NumBlendMats <= 0 && Material.Images.size() > 2)
         	{
                 MaterialSuffix = "#00";
         	}
-            else if (NumBlendMats > 0 && Material.Images.size() == 2)
+            /*else if (NumBlendMats > 0 && Material.Images.size() == 2)
             {
                 MaterialSuffix = "#11";
             }
             else if (NumBlendMats <= 0 && Material.Images.size() == 2)
             {
                 MaterialSuffix = "#10";
-            }
+            }*/
 
             wraithMaterial.MaterialName = MaterialName + MaterialSuffix;
 
